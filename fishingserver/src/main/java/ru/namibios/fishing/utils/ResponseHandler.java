@@ -1,4 +1,4 @@
-package ru.namibios.arduino.utils;
+package ru.namibios.fishing.utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;

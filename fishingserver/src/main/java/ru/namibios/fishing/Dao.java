@@ -1,4 +1,4 @@
-package ru.namibios.arduino;
+package ru.namibios.fishing;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 

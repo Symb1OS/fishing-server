@@ -21,7 +21,7 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="ru.namibios.arduino" />
+	<context:component-scan base-package="ru.namibios.fishing" />
 	
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope= "singleton">
 		
@@ -43,6 +43,6 @@
 		<beans:property name="dataSource" ref="dataSource" />
 	</beans:bean>
 	
-	<beans:bean id="service" class="ru.namibios.arduino.Service" />
+	<beans:bean id="service" class="ru.namibios.fishing.Service" />
 	
 </beans:beans>

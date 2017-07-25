@@ -1,9 +1,9 @@
-package ru.namibios.arduino;
+package ru.namibios.fishing;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import ru.namibios.arduino.utils.Status;
+import ru.namibios.fishing.utils.Status;
 
 public class Service {
 

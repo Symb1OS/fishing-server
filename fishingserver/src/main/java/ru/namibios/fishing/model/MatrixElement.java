@@ -1,4 +1,4 @@
-package ru.namibios.arduino.model;
+package ru.namibios.fishing.model;
 
 public class MatrixElement {
 	

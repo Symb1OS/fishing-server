@@ -1,4 +1,4 @@
-package ru.namibios.arduino;
+package ru.namibios.fishing;
 
 import java.io.IOException;
 
@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ru.namibios.arduino.model.ImageParser;
-import ru.namibios.arduino.utils.Status;
-import ru.namibios.arduino.utils.Message;
-import ru.namibios.arduino.utils.ResponseHandler;
+import ru.namibios.fishing.model.ImageParser;
+import ru.namibios.fishing.utils.Message;
+import ru.namibios.fishing.utils.ResponseHandler;
+import ru.namibios.fishing.utils.Status;
 
 @Controller
 public class KapchaController {
@@ -51,7 +51,7 @@ public class KapchaController {
 	public void kapcha(HttpServletRequest request, HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException{
 		
 		String hash = request.getParameter("HASH");
-		String matrix = request.getParameter("MATRIX");
+		String tmpMatrix = request.getParameter("MATRIX");
 	
 		logger.info("hash= " + hash);
 		
@@ -69,9 +69,9 @@ public class KapchaController {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		int[][] tmp = mapper.readValue(matrix, int[][].class);
+		int[][] matrix = mapper.readValue(tmpMatrix, int[][].class);
 		
-		ImageParser imageParser = new ImageParser(tmp);
+		ImageParser imageParser = new ImageParser(matrix);
 		imageParser.getCodes();
 		String keys = imageParser.getkeyFromTemlate();
 		

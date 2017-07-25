@@ -29,7 +29,6 @@
 	 	<beans:property name="url" 			 	value=""/>
 		<beans:property name="username" 		value=""/> 
 		<beans:property name="password" 		value="" />
-		<beans:property name="connectionProperties" value="ApplicationName=JAnsys;clientProgramName=JAnsys"/>
 		<beans:property name="maxActive" 		 value="15"/>
 		<beans:property name="maxIdle" 		 	 value="2"/>
 		<beans:property name="removeAbandoned"   value="true"/>

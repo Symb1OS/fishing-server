@@ -26,9 +26,9 @@
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope= "singleton">
 		
 		<beans:property name="driverClassName"  value="com.ibm.db2.jcc.DB2Driver"/>
-	 	<beans:property name="url" 			 	value="jdbc:db2://10.0.0.251:50002/FINANZ"/>
-		<beans:property name="username" 		value="shl"/> 
-		<beans:property name="password" 		value="pa55word" />
+	 	<beans:property name="url" 			 	value=""/>
+		<beans:property name="username" 		value=""/> 
+		<beans:property name="password" 		value="" />
 		<beans:property name="connectionProperties" value="ApplicationName=JAnsys;clientProgramName=JAnsys"/>
 		<beans:property name="maxActive" 		 value="15"/>
 		<beans:property name="maxIdle" 		 	 value="2"/>

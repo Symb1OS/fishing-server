@@ -23,20 +23,12 @@
 	
 	<context:component-scan base-package="ru.namibios.fishing" />
 	
-	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope= "singleton">
-		
-		<beans:property name="driverClassName"  value="com.ibm.db2.jcc.DB2Driver"/>
-	 	<beans:property name="url" 			 	value=""/>
-		<beans:property name="username" 		value=""/> 
-		<beans:property name="password" 		value="" />
-		<beans:property name="maxActive" 		 value="15"/>
-		<beans:property name="maxIdle" 		 	 value="2"/>
-		<beans:property name="removeAbandoned"   value="true"/>
-		<beans:property name="validationQuery"   value="values(1)" />
-		<beans:property name="testOnBorrow" 	 value="true" />
-		<beans:property name="testOnReturn" 	 value="true"/>
-		<beans:property name="defaultTransactionIsolation" value="2"/>
-	
+	<beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="url" value="jdbc:mysql://localhost:3306/fishing" />
+		<beans:property name="username" value="srv_fishing" />
+		<beans:property name="password" value="pa55word" />
 	</beans:bean>
 	
 	<beans:bean id="jdbc" class="org.springframework.jdbc.core.JdbcTemplate">

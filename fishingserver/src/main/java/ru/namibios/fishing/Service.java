@@ -10,7 +10,7 @@ public class Service {
 	@Autowired
 	private JdbcTemplate jdbc;
 	
-	private static final String SELECT_CHECK_AUTHORIZATION = "SELECT COUNT FROM PROPERTIES.AUTHORITY WHERE HASH = ?";
+	private static final String SELECT_CHECK_AUTHORIZATION = "SELECT COUNT(*) FROM fishing.AUTHORITY WHERE HASH = ?";
 	
 	public int checkHash(String hash){
 		int status = jdbc.queryForObject(SELECT_CHECK_AUTHORIZATION, Integer.class, hash); 

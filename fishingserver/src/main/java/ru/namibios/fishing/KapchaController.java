@@ -61,7 +61,7 @@ public class KapchaController {
 			return;
 		}
 
-		int status = Status.AUTH_OK; //service.checkHash(hash);
+		int status = service.checkHash(hash);
 		if(status != Status.AUTH_OK){ 
 			logger.info("[" + hash + "] status - " + status);
 			return;

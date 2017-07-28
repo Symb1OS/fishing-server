@@ -98,13 +98,18 @@ public class ImageParser {
 	public String getkeyFromTemlate() {
 		StringBuilder rezult = new StringBuilder();
 		
+		
 		for (int[][] numberMatrix : keyWordListList) {
-			rezult.append(equalsMatrix(numberMatrix));
+			int rezultIndex = equalsMatrix(numberMatrix);
+			if(rezultIndex != -1){
+				rezult.append(Chars.values()[rezultIndex]);
+			} else {
+				rezult.append("-1");
+			}
 		}	
 		return rezult.toString().replace("-1", "");
 	}
 	
-	@SuppressWarnings("unused")
 	private void printMatrix(int[][] tmp, int row, int column){
 		for (int i = 0; i < row; i++) {
 			for (int j = 0; j < column; j++) {
@@ -114,7 +119,6 @@ public class ImageParser {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private void printTemplate(int[][] tmp, int row, int column){
 		System.out.println("new int[][]{");
 		for (int i = 0; i < row; i++) {

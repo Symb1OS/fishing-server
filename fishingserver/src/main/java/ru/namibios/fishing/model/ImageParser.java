@@ -3,133 +3,146 @@ package ru.namibios.fishing.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ru.namibios.fishing.utils.MatrixUtils;
 
 public class ImageParser {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ImageParser.class);
-	
-	private static final int ROW = 58;
-	private static final int COLUMN = 372;
-
 	private static final double CHARS_MIN_KOEF = 0.88;
 	
 	private int[][] imageMatrix;
-	private ArrayList<int[][]> keyWordListList;
+	private ArrayList<int[][]> keyList;
+
+	private MatrixTemplate[] collectionTemplate;
 	
-	public ImageParser(int[][] imageMatrix){
+	public ImageParser(int[][] imageMatrix, MatrixTemplate[] matrixTemplate){
 		this.imageMatrix = imageMatrix;
-		this.keyWordListList = new ArrayList<int[][]>();
+		this.keyList = new ArrayList<int[][]>();
+		this.collectionTemplate = matrixTemplate;
 	}
 	
-	public void getCodes(){
-		FillMatrix fillMatrix = new FillMatrix(imageMatrix, ROW, COLUMN);
+	public void parse(){
+		
+		FillMatrix fillMatrix = new FillMatrix(imageMatrix);
 		fillMatrix.markupMatrix();
 		fillMatrix.cleanOfBounds(40, 100);
 		imageMatrix = fillMatrix.getMatrix();
 		
-		printMatrix(imageMatrix, ROW, COLUMN);
+		MatrixUtils.printMatrix(imageMatrix);
 		
 		List<int[][]> list = fillMatrix.toListMatrix();
+		keyList = new ArrayList<int[][]>(list);
 		
-		keyWordListList = new ArrayList<int[][]>(list);
-		
-		for (int[][] is : list) {
-			printTemplate(is, FillMatrix.SYMBOL_ROW, FillMatrix.SYMBOL_COLUMN);
+		for (int[][] template : list) {
+			MatrixUtils.printTemplate(template);
 		}
 		
-		}
+	}
 	
 	public int[][] getImageMatrix(){
 		return imageMatrix;
 	}
 			
-	private int equalsMatrix(int[][] numberMatrix) {
-		int rezultIndex = -1;
+	private int compare(int[][] numberMatrix) {
 		
-		double koef = 0;
-		double templateKoef = 0;
-		double calcKoef = 0;
-		double maxCalcKoef = 0;
-
+		Coefficient coef = new Coefficient(CHARS_MIN_KOEF);
+		
 		int index = 0;
-		int size =  Chars.values().length;
-		while(index < size){
-			
-			List<int[][]> templateNumber = Chars.values()[index].getTemplates(); 
+		while(index < collectionTemplate.length){
+			List<int[][]> templateNumber = collectionTemplate[index].getTemplates(); 
 			for (int[][] template : templateNumber) {
-				
-				if(calcKoef > CHARS_MIN_KOEF) break;
-				if(template.length != numberMatrix.length ) continue;
-					
-				templateKoef=0; koef = 0;
-				for (int i = 0; i < ROW; i++) {
-					for (int j = 0; j < COLUMN; j++) {
-						boolean isValue;
-						try{ isValue = (template[i][j] == 1); }catch(ArrayIndexOutOfBoundsException e){break;}
-						if(isValue) templateKoef++;
-						
-						boolean valuesEqual = numberMatrix[i][j] == template[i][j] && template[i][j] != 0; 
-						if(valuesEqual) koef +=1;
-					}
-				}
-				
-				calcKoef = koef / templateKoef;
-				boolean isNewKoef = calcKoef > maxCalcKoef; 
-				if( isNewKoef ){
-					rezultIndex = index;
-					maxCalcKoef = calcKoef;
-				}
-				
-				boolean isUndefined = maxCalcKoef < CHARS_MIN_KOEF;
-				if( isUndefined ) rezultIndex = -1;
-				
-				logger.info("index= " + index + " |templateKoef= " + templateKoef + " | koef= " + koef + " | " + calcKoef );
-				logger.info("========================================");
-				
+				if(!isCorrectrDimension(numberMatrix, template)) continue;
+				coef.init(numberMatrix, template);
+				coef.calculate(index);
 			}
+			
+			if(coef.isFound()) break; else coef.resetRezultIndex();
 			index++;
 		}
 		
-		return rezultIndex == 10 ? -1 : rezultIndex;
+		return coef.getRezultIndex();
 	}
-	
-	public String getkeyFromTemlate() {
+
+	private boolean isCorrectrDimension(int[][] numberMatrix, int[][] template) {
+		return (numberMatrix.length == template.length && numberMatrix[0].length == template[0].length);
+	}
+
+	public String getKey() {
 		StringBuilder rezult = new StringBuilder();
 		
-		
-		for (int[][] numberMatrix : keyWordListList) {
-			int rezultIndex = equalsMatrix(numberMatrix);
-			if(rezultIndex != -1){
-				rezult.append(Chars.values()[rezultIndex]);
-			} else {
-				rezult.append("-1");
-			}
+		for (int[][] numberMatrix : keyList) {
+			rezult.append(compare(numberMatrix));
 		}	
 		return rezult.toString().replace("-1", "");
 	}
-	
-	private void printMatrix(int[][] tmp, int row, int column){
-		for (int i = 0; i < row; i++) {
-			for (int j = 0; j < column; j++) {
-				System.out.print(tmp[i][j]!= 0 ? 1 : " ");
+	 
+	public String getNumber() {
+		StringBuilder rezult = new StringBuilder();
+		
+		for (int[][] numberMatrix : keyList) {
+			int rezultIndex = compare(numberMatrix);
+			if(rezultIndex != -1){
+				rezult.append(collectionTemplate[rezultIndex]);
 			}
-			System.out.println();
-		}
+		}	
+		return rezult.toString();
 	}
 	
-	private void printTemplate(int[][] tmp, int row, int column){
-		System.out.println("new int[][]{");
-		for (int i = 0; i < row; i++) {
-			System.out.print("{");
-			for (int j = 0; j < column; j++) {
-				System.out.print((tmp[i][j] == 0 ? "0" : "1") + ", ");
-			}
-			System.out.print("},");
-			System.out.println();
+	class Coefficient{
+
+		private final double minKoef;
+		
+		private double maxCalcKoef;
+		private double calcKoef;
+		
+		private double valueKoef;
+		private double templateKoef;
+		
+		private int rezultIndex;
+		
+		public Coefficient(double minKoef) {
+			this.minKoef = minKoef; 
+			this.calcKoef = 0;
+			this.maxCalcKoef = 0;
 		}
-		System.out.println("}");
-		System.out.println();
+		
+		public void init(int[][] value, int[][] template) {
+			
+			valueKoef = 0;
+			templateKoef = 0;
+			for (int i = 0; i < template.length; i++) {
+				for (int j = 0; j < template[0].length; j++) {
+					if(template[i][j] == 1) templateKoef++;
+					if(value[i][j] == template[i][j] && template[i][j] != 0) valueKoef++;
+				}
+			}
+		}
+		
+		public void calculate(int index) {
+			calcKoef = valueKoef / templateKoef;
+			boolean isNewKoef = calcKoef > maxCalcKoef; 
+			if( isNewKoef ){
+				rezultIndex = index;
+				maxCalcKoef = calcKoef;
+			}
+		}
+		
+		public boolean isFound() {
+			return maxCalcKoef > minKoef;
+		}
+		
+		public void resetRezultIndex() {
+			rezultIndex = -1;
+		}
+		
+		public int getRezultIndex() {
+			return rezultIndex;
+		}
+
+		@Override
+		public String toString() {
+			return "Coefficient [minKoef=" + minKoef + ", maxCalcKoef=" + maxCalcKoef + ", calcKoef=" + calcKoef
+					+ ", valueKoef=" + valueKoef + ", templateKoef=" + templateKoef + ", rezultIndex=" + rezultIndex
+					+ "]";
+		}
 	}
 }

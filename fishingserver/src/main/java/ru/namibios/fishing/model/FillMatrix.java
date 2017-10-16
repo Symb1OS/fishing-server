@@ -33,12 +33,12 @@ public class FillMatrix {
 
 	private int iteration;
 	
-	public FillMatrix(int[][] matrix, int row, int column) {
+	public FillMatrix(int[][] matrix) {
 		this.matrix = matrix;
 		this.elements = new HashMap<Integer, MatrixElement>();
 		
-		this.maxRow = row;
-		this.maxColumn = column;
+		this.maxRow = matrix.length;
+		this.maxColumn = matrix[0].length;
 		
 		this.counter = 2;
 		this.iteration = 0;
@@ -138,16 +138,8 @@ public class FillMatrix {
 		Map<Integer, MatrixElement> rezultMap = new HashMap<Integer, MatrixElement>();
 		
 		int avg = 0;
-		int count=0;
-		int sumIndexRow=0;
-		for (int key: elements.keySet()) {
-			 MatrixElement element = elements.get(key);
-			 sumIndexRow += element.getMaxRow();
-			 count++;
-		}
 		
 		List<Integer> sortIndex = new ArrayList<Integer>();
-		
 		for (int key: elements.keySet()) {
 			 MatrixElement element = elements.get(key);
 			 if(element.getMaxRow() > avg){

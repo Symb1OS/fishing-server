@@ -7,14 +7,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ru.namibios.fishing.model.Chars;
 import ru.namibios.fishing.model.ImageParser;
+import ru.namibios.fishing.utils.JSON;
 import ru.namibios.fishing.utils.Message;
 import ru.namibios.fishing.utils.ResponseHandler;
 import ru.namibios.fishing.utils.Status;
@@ -67,13 +68,27 @@ public class KapchaController {
 			return;
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
+		int[][] matrix = JSON.getInstance().readValue(tmpMatrix, int[][].class);
 		
-		int[][] matrix = mapper.readValue(tmpMatrix, int[][].class);
+		ImageParser imageParser = new ImageParser(matrix, Chars.values());
+		imageParser.parse();
+		String keys = imageParser.getNumber();
 		
-		ImageParser imageParser = new ImageParser(matrix);
-		imageParser.getCodes();
-		String keys = imageParser.getkeyFromTemlate();
+		logger.info(String.format(Message.MSG_RESP_KEYS, hash, keys));
+		ResponseHandler.writeMapperJson(response, keys);
+	}
+	
+	@RequestMapping(value="/test")
+	public void test(HttpServletRequest request, HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException{
+		
+		String hash = request.getParameter("HASH");
+		String tmpMatrix = request.getParameter("MATRIX");
+	
+		int[][] matrix = JSON.getInstance().readValue(tmpMatrix, int[][].class);
+		
+		ImageParser imageParser = new ImageParser(matrix, Chars.values());
+		imageParser.parse();
+		String keys = imageParser.getNumber();
 		
 		logger.info(String.format(Message.MSG_RESP_KEYS, hash, keys));
 		ResponseHandler.writeMapperJson(response, keys);

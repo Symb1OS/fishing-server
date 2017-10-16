@@ -3,7 +3,7 @@ package ru.namibios.fishing.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum Chars {
+public enum Chars implements MatrixTemplate{
 	
 	w(new int[][]{  {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, },
 					{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, },

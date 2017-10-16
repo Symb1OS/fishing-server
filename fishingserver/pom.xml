@@ -159,6 +159,7 @@
 		  
 	</dependencies>
     <build>
+   	 <finalName>fishingserver</finalName>
         <plugins>
         
 		    <plugin>

@@ -2,20 +2,25 @@ package ru.namibios.fishing.model;
 
 public class MatrixElement {
 	
-	private int minRow;
-	private int maxRow;
+	private Integer minRow;
+	private Integer maxRow;
 	
-	private int minColumn;
-	private int maxColumn;
+	private Integer minColumn;
+	private Integer maxColumn;
+	
+	private Integer rowLength;
+	private Integer columnLength;
 	
 	public MatrixElement(int minRow, int maxRow, int minColumn, int maxColumn) {
 		this.minRow = minRow;
 		this.maxRow = maxRow;
 		this.minColumn = minColumn;
 		this.maxColumn = maxColumn;
+		this.rowLength = getRowLength();
+		this.columnLength = getColumnLength();
 	}
 
-	public int getMinRow() {
+	public Integer getMinRow() {
 		return minRow;
 	}
 
@@ -23,7 +28,7 @@ public class MatrixElement {
 		this.minRow = minRow;
 	}
 
-	public int getMaxRow() {
+	public Integer getMaxRow() {
 		return maxRow;
 	}
 
@@ -31,7 +36,7 @@ public class MatrixElement {
 		this.maxRow = maxRow;
 	}
 
-	public int getMinColumn() {
+	public Integer getMinColumn() {
 		return minColumn;
 	}
 
@@ -39,17 +44,28 @@ public class MatrixElement {
 		this.minColumn = minColumn;
 	}
 
-	public int getMaxColumn() {
+	public Integer getMaxColumn() {
 		return maxColumn;
 	}
 
 	public void setMaxColumn(int maxColumn) {
 		this.maxColumn = maxColumn;
 	}
-
+	
+	public Integer getColumnLength() {
+		this.columnLength = maxColumn - minColumn; 
+		return columnLength;
+	}
+	
+	public Integer getRowLength() {
+		this.rowLength = maxRow - minRow;
+		return rowLength;
+	}
+	
 	@Override
 	public String toString() {
 		return "MatrixElement [minRow=" + minRow + ", maxRow=" + maxRow + ", minColumn=" + minColumn + ", maxColumn="
-				+ maxColumn + "]";
+				+ maxColumn + ", rowLength=" + rowLength + ", columnLength=" + columnLength + "]";
 	}
+	
 }

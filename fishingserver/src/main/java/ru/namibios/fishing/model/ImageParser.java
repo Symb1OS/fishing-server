@@ -3,9 +3,13 @@ package ru.namibios.fishing.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import ru.namibios.fishing.utils.MatrixUtils;
 
 public class ImageParser {
+	
+	private static final Logger logger=  Logger.getLogger(ImageParser.class);
 	
 	private static final double CHARS_MIN_KOEF = 0.88;
 	
@@ -24,7 +28,7 @@ public class ImageParser {
 		
 		FillMatrix fillMatrix = new FillMatrix(imageMatrix);
 		fillMatrix.markupMatrix();
-		fillMatrix.cleanOfBounds(40, 100);
+		fillMatrix.cleanOfBounds(36, 100);
 		imageMatrix = fillMatrix.getMatrix();
 		
 		MatrixUtils.printMatrix(imageMatrix);
@@ -35,7 +39,6 @@ public class ImageParser {
 		for (int[][] template : list) {
 			MatrixUtils.printTemplate(template);
 		}
-		
 	}
 	
 	public int[][] getImageMatrix(){
@@ -53,6 +56,7 @@ public class ImageParser {
 				if(!isCorrectrDimension(numberMatrix, template)) continue;
 				coef.init(numberMatrix, template);
 				coef.calculate(index);
+				logger.debug(coef);
 			}
 			
 			if(coef.isFound()) break; else coef.resetRezultIndex();

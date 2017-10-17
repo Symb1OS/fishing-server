@@ -1,13 +1,18 @@
 package ru.namibios.fishing.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ru.namibios.fishing.utils.MatrixUtils;
 
 public class FillMatrix {
 	
@@ -121,52 +126,58 @@ public class FillMatrix {
 			boolean isMinIndexOk = minIndexRow < MIN_ROW_INDEX;
 			if(isIntervalOk || isDimensionOk || isMinIndexOk){
 				clear(objCnt);
-				logger.info("Clear object=" + objCnt + "| sum= " + sum + " | " + "isIntervalOk " + isIntervalOk + "| isDimensionOk " + isDimensionOk + "| isDimensionOk " + isDimensionOk);
+				logger.debug("Clear object=" + objCnt + "| sum= " + sum + " | " + "isIntervalOk " + isIntervalOk + "| isDimensionOk " + isDimensionOk + "| isMinIndexOk " + isMinIndexOk);
 			} else{
 				MatrixElement element = new MatrixElement(minIndexRow, maxIndexRow, minIndexColumn, maxIndexColumn);
 				elements.put(objCnt, element);
-				logger.info("Object " + objCnt + " sum= " + sum + " | ");
-				logger.info(element.toString());
+				logger.debug("Object " + objCnt + " sum= " + sum + " | " + element.toString());
 			}
 			objCnt++;
 		}
 		
 	}
 	
-	private Map<Integer, MatrixElement> getMinMatrix(Map<Integer, MatrixElement> elements){
+	private Map<Integer, MatrixElement> debugPrint(Map<Integer, MatrixElement> elements){
 		
-		Map<Integer, MatrixElement> rezultMap = new HashMap<Integer, MatrixElement>();
+		Map<Integer, MatrixElement> rezultMap = getSortedMap(elements);
 		
-		int avg = 0;
-		
-		List<Integer> sortIndex = new ArrayList<Integer>();
-		for (int key: elements.keySet()) {
-			 MatrixElement element = elements.get(key);
-			 if(element.getMaxRow() > avg){
-				sortIndex.add(element.getMinColumn());
-			 }
-		}
-		
-		Object[] sort = sortIndex.toArray();
-		Arrays.sort(sort);
-		
-		for (int i = 0; i < sort.length; i++) {
-			for (int key: elements.keySet()) {
-				 MatrixElement element = elements.get(key);
-				 if(element.getMinColumn() == (Integer)sort[i]){
-					 rezultMap.put(i, element);
-				 }
-			}
+		for (Entry<Integer, MatrixElement> entry : rezultMap.entrySet()) {
+			MatrixElement e = rezultMap.get(entry.getKey());
+			System.out.println(e.toString());
+			MatrixUtils.printMatrix(matrix, e);
+			System.out.println();
 		}
 		
 		return rezultMap;
 	}
 	
+	private Map<Integer, MatrixElement> getSortedMap(Map<Integer, MatrixElement> elements) {
+		
+		LinkedList<Entry<Integer, MatrixElement>> list = new LinkedList<Map.Entry<Integer, MatrixElement>>(elements.entrySet());
+		
+		Collections.sort(list, (o1,o2) -> o1.getValue().getMinColumn().compareTo(o2.getValue().getMinColumn()));
+		
+		Map<Integer, MatrixElement> result = new LinkedHashMap<Integer, MatrixElement>();
+	    for (Map.Entry<Integer, MatrixElement> entry : list) {
+	        result.put(entry.getKey(), entry.getValue());
+	    }
+	    
+	    return result;
+	}
+
 	public List<int[][]> toListMatrix(){
 		List<int[][]> rezult = new ArrayList<int[][]>();
-		elements = getMinMatrix(elements);
+		elements = getSortedMap(elements);
+		debugPrint(elements);
+		
 		for (int key : elements.keySet()) {
+			
 			MatrixElement element = elements.get(key);
+			
+			if(!isCorrectElement(element)) {
+				continue;
+			} 
+			
 			int[][] symbol = new int[SYMBOL_ROW][SYMBOL_COLUMN];
 			int row=0;
 			int column=0;
@@ -184,6 +195,11 @@ public class FillMatrix {
 		return rezult;
 	}
 	
+	private boolean isCorrectElement(MatrixElement element) {
+		logger.debug("Incorrect dimension" + element.toString());
+		return element.getColumnLength() < SYMBOL_COLUMN && element.getRowLength() < SYMBOL_ROW;
+	}
+
 	public void markupMatrix(){
 		for (int i = 0; i < maxRow; i++) {
 			for (int j = 0; j < maxColumn; j++) {

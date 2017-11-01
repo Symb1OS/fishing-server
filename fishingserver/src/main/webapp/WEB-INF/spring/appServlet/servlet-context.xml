@@ -37,4 +37,6 @@
 	
 	<beans:bean id="service" class="ru.namibios.fishing.Service" />
 	
+	
+	
 </beans:beans>

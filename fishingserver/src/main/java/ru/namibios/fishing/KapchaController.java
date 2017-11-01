@@ -34,7 +34,7 @@ import ru.namibios.fishing.utils.Status;
 @Controller
 public class KapchaController {
 	
-	private static final String UPLOAD_DIR = "fishingserver/resources/";
+	private static final String UPLOAD_DIR = "/home/symbios/fishingserver/resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(KapchaController.class);
 

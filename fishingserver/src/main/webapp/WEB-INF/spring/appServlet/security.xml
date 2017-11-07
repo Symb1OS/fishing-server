@@ -8,6 +8,9 @@
 	
 	<http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/status" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/app" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/changePassword" access="hasRole('ROLE_USER')" />
+		
 		
 		<form-login
 			login-page="/login"
@@ -17,13 +20,27 @@
 			password-parameter="password"
 		/>
 		
-		<logout logout-success-url="/log?logout" />
+		<logout logout-success-url="/login?logout" />
+		
+		<access-denied-handler error-page="/403"/>
 		
 		<csrf/>
 		
 	</http>
 
+
 	<authentication-manager>
+			<authentication-provider>
+			 	<password-encoder hash="sha">
+			 		<salt-source system-wide="youwillnotpass"/>
+			 	</password-encoder>  
+				<jdbc-user-service data-source-ref="dataSource"
+					users-by-username-query= "select username,password, enabled from fishing.users where username=?"
+					authorities-by-username-query= "select username, role from fishing.user_roles where username =?" />
+			</authentication-provider>
+	</authentication-manager>
+
+<!-- 	<authentication-manager>
 		<authentication-provider>
 			<user-service>
 				<user name="symbios" password="bef1c08eedddbe9f9d83a0f07d0d26ce9b360a55" authorities="ROLE_USER" />
@@ -31,6 +48,6 @@
 			</user-service>
 
 		</authentication-provider>
-	</authentication-manager>
+	</authentication-manager> -->
 
 </beans:beans>

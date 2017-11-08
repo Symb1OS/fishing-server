@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,6 +31,25 @@ public class SettingsController {
 		
 		return mav;
 		
+	}
+	
+	@RequestMapping(value = "/loadHash", method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> loadHash(){
+		
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Map<String, Object> map = new HashMap<>();
+		
+		Map<String, Object> settings = service.loadHash(username);
+		String hash = (String) settings.get("licence_key");
+		
+		
+		if ( hash == null || hash.isEmpty() ) {
+			map.put("licence_key", "Ключ отсутствует");
+			map.put("date_valid", "1970-01-01");
+			return map;
+		}
+				
+		return settings;
 	}
 	
 	@RequestMapping("/changePassword")
@@ -61,6 +81,5 @@ public class SettingsController {
 		}
 		
 		return map;
-		
 	}
 }

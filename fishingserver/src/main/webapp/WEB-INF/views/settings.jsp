@@ -13,18 +13,53 @@
 </head>
 <body>
 
+
+
 <script type="text/javascript">
 
-var hashPanel = Ext.create('Ext.panel.Panel', {
+Ext.onReady(function(){	
+	
+var hashPanel = Ext.create('Ext.form.Panel', {
 	title: 'Ключ продукта',
-	height: 80,
+	height: 120,
+	defaults:{
+		width: 500,
+		labelWidth : 120,
+		editable: false,
+	},
 	items: [{
 		xtype: 'textfield',
-		editable: false,
-		width: 500,
-		value: 'bef1c08eedddbe9f9d83a0f07d0d26ce9b360a55'
-	}]
+		id: 'licence_key',
+		fieldLabel : 'Ключ:',
+		
+	},{
+		xtype: 'textfield',
+		id: 'date_valid',
+		fieldLabel : 'Действителен до:'
+		
+	}],
+	listeners: {
+		beforeshow : function( form, eOpts ){
+				
+			Ext.Ajax.request({
+           		url: 'loadHash',
+        	    method: 'GET', 
+            	success: function(response){
+            		var data= Ext.JSON.decode(response.responseText);
+            		Ext.getCmp("licence_key").setValue(data.licence_key);
+    			    Ext.getCmp("date_valid").setValue(data.date_valid);
+        		},
+        		failure: function(response) {
+            		Ext.Msg.alert('Ошибка', 'Внутрення ошибка'); 
+        		}
+        	})
+        	
+		}
+	}
+	
 })
+
+hashPanel.show();
 
 var passwordPanel = Ext.create('Ext.panel.Panel', {
 	title: 'Смена пароля',
@@ -70,16 +105,13 @@ var passwordPanel = Ext.create('Ext.panel.Panel', {
 	                	"${_csrf.parameterName}" : "${_csrf.token}"
 	            	},
 	            	success: function(response){
-	            		console.log(response)
-	            		var status = response.responseText.success;
-	            		var message = response.responseText.message;
-	            		Ext.Msg.alert(status, message);
+	            		var data= Ext.JSON.decode(response.responseText)
+	            		var status = data.success;
+	            		var message = data.message;
+	            		Ext.Msg.alert("Статус", message);
 	        		},
 	        		failure: function(response) {
-	        			console.log(response)
-	        			var status = action.result.success;
-	            		var message = action.result.message;
-	            		Ext.Msg.alert(status, message); 
+	            		Ext.Msg.alert('Ошибка', 'Внутрення ошибка'); 
 	        		}
 	        	})
 				
@@ -99,6 +131,8 @@ var viewport = Ext.create('Ext.container.Viewport', {
 		margin: '0 0 10 0'
 	},
 	items : [hashPanel, passwordPanel ]
+})
+
 });
 
 </script>

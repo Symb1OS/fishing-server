@@ -11,6 +11,7 @@
 		<intercept-url pattern="/app" access="hasRole('ROLE_USER')" />
 		<intercept-url pattern="/changePassword" access="hasRole('ROLE_USER')" />
 		
+		<intercept-url pattern="/admin/*" access="hasRole('ROLE_ADMIN')" />
 		
 		<form-login
 			login-page="/login"
@@ -28,7 +29,6 @@
 		
 	</http>
 
-
 	<authentication-manager>
 			<authentication-provider>
 			 	<password-encoder hash="sha">
@@ -39,15 +39,5 @@
 					authorities-by-username-query= "select username, role from fishing.user_roles where username =?" />
 			</authentication-provider>
 	</authentication-manager>
-
-<!-- 	<authentication-manager>
-		<authentication-provider>
-			<user-service>
-				<user name="symbios" password="bef1c08eedddbe9f9d83a0f07d0d26ce9b360a55" authorities="ROLE_USER" />
-				<user name="muscaria" password="c586fb83d662f28c6db81e21513565fd" authorities="ROLE_USER" />
-			</user-service>
-
-		</authentication-provider>
-	</authentication-manager> -->
 
 </beans:beans>

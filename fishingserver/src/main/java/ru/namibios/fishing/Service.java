@@ -1,5 +1,7 @@
 package ru.namibios.fishing;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -11,13 +13,15 @@ public class Service {
 	@Autowired
 	private JdbcTemplate jdbc;
 	
-	private static final String SQL_SELECT_CHECK_AUTHORIZATION = "SELECT COUNT(*) FROM fishing.AUTHORITY WHERE HASH = ?";
+	private static final String SQL_SELECT_CHECK_AUTHORIZATION = "SELECT COUNT(*) FROM fishing.users WHERE licence_key = ?";
 	
 	private static final String SQL_CURRENT_PASSWORD = "select COUNT(*) from fishing.users where username = ? and password = ?";
 	
 	private static final String SQL_CHECK_VALID_LICENCE = "select enabled from fishing.users where licence_key = ?"; 
 	
 	private static final String SQL_UPDATE_PASSWORD = "update fishing.users SET password = ? where username = ?";
+
+	private static final String SQL_LOAD_HASH = "select licence_key, date_valid from fishing.users where username = ?";
 	
 	public int checkHash(String hash){
 		int status = jdbc.queryForObject(SQL_SELECT_CHECK_AUTHORIZATION, Integer.class, hash); 
@@ -38,5 +42,9 @@ public class Service {
 	public int changePassword(String username, String password) {
 		String hash = Encoder.encode(password);
 		return jdbc.update(SQL_UPDATE_PASSWORD, hash, username);
+	}
+
+	public Map<String, Object> loadHash(String username) {
+		return jdbc.queryForMap(SQL_LOAD_HASH, username);
 	}
 }

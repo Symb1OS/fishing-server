@@ -1,4 +1,4 @@
-package ru.namibios.fishing;
+package ru.namibios.fishing.web;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,17 +43,10 @@ public class MonitoringController {
 		return mav;
 	}
 	
-	
 	@RequestMapping("/status")
 	public ModelAndView status(HttpServletRequest request, HttpServletResponse response) {
 		
-		String hash = request.getParameter("HASH");
-		hash = "bef1c08eedddbe9f9d83a0f07d0d26ce9b360a55";
-	  /*  int status = service.checkHash(hash);
-		if(status != Status.AUTH_OK) {
-			logger.info("[" + hash + "] - Authentification bad");
-			return null;
-		}*/
+		String hash = service.getHash(SecurityContextHolder.getContext().getAuthentication().getName());
 				
 		String path = "";
 		String name = "";

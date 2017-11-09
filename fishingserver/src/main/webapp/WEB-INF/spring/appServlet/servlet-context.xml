@@ -31,9 +31,9 @@
 		<beans:constructor-arg ref="dataSource"></beans:constructor-arg>
 	</beans:bean>
 
-	<beans:bean id="service" class="ru.namibios.fishing.Service" />
+	<beans:bean id="service" class="ru.namibios.fishing.web.Service" />
 	
-	<beans:bean id="userService" class="ru.namibios.fishing.UserService" />
+	<beans:bean id="userService" class="ru.namibios.fishing.web.UserService" />
 	
 	
 	

@@ -1,8 +1,8 @@
-package ru.namibios.fishing.utils;
+package ru.namibios.fishing.model.encode;
 
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
-public class Encoder {
+public class ShaEncoder {
 	
 	private static final String SALT = "youwillnotpass";
 	
@@ -13,8 +13,4 @@ public class Encoder {
 		
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(encode("41e5709bacac9bb98c67433e53d2502a6fa4084f"));
-	}
-
 }

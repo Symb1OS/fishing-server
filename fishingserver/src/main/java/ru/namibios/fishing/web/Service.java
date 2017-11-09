@@ -1,11 +1,11 @@
-package ru.namibios.fishing;
+package ru.namibios.fishing.web;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import ru.namibios.fishing.utils.Encoder;
+import ru.namibios.fishing.model.encode.ShaEncoder;
 import ru.namibios.fishing.utils.Status;
 
 public class Service {
@@ -22,6 +22,8 @@ public class Service {
 	private static final String SQL_UPDATE_PASSWORD = "update fishing.users SET password = ? where username = ?";
 
 	private static final String SQL_LOAD_HASH = "select licence_key, date_valid from fishing.users where username = ?";
+
+	private static final String SQL_SELECT_HASH = "select licence_key from fishing.users where username = ?";
 	
 	public int checkHash(String hash){
 		int status = jdbc.queryForObject(SQL_SELECT_CHECK_AUTHORIZATION, Integer.class, hash); 
@@ -34,17 +36,21 @@ public class Service {
 	}
 	
 	public boolean checkOldPassword(String username, String oldPassword) {
-		String hash = Encoder.encode(oldPassword);
+		String hash = ShaEncoder.encode(oldPassword);
 		int status = jdbc.queryForObject(SQL_CURRENT_PASSWORD, Integer.class , username, hash);
 		return status == 1 ? true : false;
 	}
 	
 	public int changePassword(String username, String password) {
-		String hash = Encoder.encode(password);
+		String hash = ShaEncoder.encode(password);
 		return jdbc.update(SQL_UPDATE_PASSWORD, hash, username);
 	}
 
 	public Map<String, Object> loadHash(String username) {
 		return jdbc.queryForMap(SQL_LOAD_HASH, username);
+	}
+
+	public String getHash(String username) {
+		return jdbc.queryForObject(SQL_SELECT_HASH, String.class, username);
 	}
 }

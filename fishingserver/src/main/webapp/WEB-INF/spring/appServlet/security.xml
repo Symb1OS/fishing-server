@@ -11,7 +11,7 @@
 		<intercept-url pattern="/app" access="hasRole('ROLE_USER')" />
 		<intercept-url pattern="/changePassword" access="hasRole('ROLE_USER')" />
 		
-		<intercept-url pattern="/user/*" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/user" access="hasRole('ROLE_ADMIN')" />
 		
 		<form-login
 			login-page="/login"

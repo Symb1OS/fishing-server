@@ -4,7 +4,7 @@
 
 <html>
 <head>
-<title>Рыбалка</title>
+<title>Личный кабинет</title>
 
 <link rel="shortcut icon" href="<c:url value="/resources/images/icon.png"/>">
 <link rel="stylesheet" type="text/css" href="<c:url value="/resources/ext6/build/classic/theme-neptune/resources/theme-neptune-all.css"/>">

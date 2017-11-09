@@ -108,6 +108,11 @@ var passwordPanel = Ext.create('Ext.panel.Panel', {
 	            		var data= Ext.JSON.decode(response.responseText)
 	            		var status = data.success;
 	            		var message = data.message;
+	            		
+	            		Ext.getCmp('oldPassword').setValue('');
+	            		Ext.getCmp('newPassword').setValue('');
+	            		Ext.getCmp('newRepeatPassword').setValue('');
+	            		
 	            		Ext.Msg.alert("Статус", message);
 	        		},
 	        		failure: function(response) {

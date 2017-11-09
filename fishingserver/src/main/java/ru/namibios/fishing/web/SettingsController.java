@@ -1,4 +1,4 @@
-package ru.namibios.fishing;
+package ru.namibios.fishing.web;
 
 import java.util.HashMap;
 import java.util.Map;

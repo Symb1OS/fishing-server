@@ -37,7 +37,7 @@ public class KapchaController {
 		if(hash.isEmpty()){
 			ResponseHandler.writeMapperJson(response, Status.KEY_IS_EMPTY);
 		}else{
-			int status = service.checkHash(hash);
+			int status = service.checkAuthorization(hash);
 			if(status == Status.AUTH_OK){
 				logger.info(String.format(Message.MSG_AUTH_SUCCESS, hash));
 			}else{
@@ -62,7 +62,7 @@ public class KapchaController {
 			return;
 		}
 
-		int status = service.checkHash(hash);
+		int status = service.checkAuthorization(hash);
 		if(status != Status.AUTH_OK){ 
 			logger.info("[" + hash + "] status - " + status);
 			return;

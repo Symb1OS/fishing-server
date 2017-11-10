@@ -16,7 +16,7 @@ public class UserService {
 	
 	private static final String SQL_UPDATE_USER = "update fishing.users set enabled = :enabled, date_valid = :date_valid where username = :username";
 	
-	private static final String SQL_ADD_USER = "insert into fishing.users values(:username, :password, :enabled, :licence_key, :date_create , :date_valid)";
+	private static final String SQL_ADD_USER = "insert into fishing.users (username, password, enabled, licence_key, date_create, date_valid) values(:username, :password, :enabled, :licence_key, :date_create, :date_valid )";
 	
 	private static final String SQL_DELETE_USER = "delete from fishing.users where username = :username";
 

@@ -21,33 +21,67 @@ Ext.onReady(function(){
 	
 var hashPanel = Ext.create('Ext.form.Panel', {
 	title: 'Ключ продукта',
-	height: 120,
+	height: 200,
 	defaults:{
 		width: 500,
-		labelWidth : 120,
+		labelWidth : 130,
 		editable: false,
 	},
 	items: [{
 		xtype: 'textfield',
 		id: 'licence_key',
+		disabled: true,
 		fieldLabel : 'Ключ:',
 		
 	},{
 		xtype: 'textfield',
 		id: 'date_valid',
+		disabled: true,
 		fieldLabel : 'Действителен до:'
 		
+	},{
+		xtype: 'textfield',
+		id: 'url_monitoring',
+		editable: true,
+		fieldLabel : 'URL трансляции:'
+		
 	}],
+	
+	buttons : [
+		{
+			text: 'Сохранить',
+			handler: function(){
+				Ext.Ajax.request({
+	           		url: 'settings/changeUrlMonitoring',
+	           		method: 'POST', 
+	           		params: {
+	            		'url_monitoring' : Ext.getCmp('url_monitoring').value, 
+	                	"${_csrf.parameterName}" : "${_csrf.token}"
+	            	},
+	            	success: function(response){
+	            		var data= Ext.JSON.decode(response.responseText);
+	            		if(data.success){
+	            			 Ext.toast('Сохранено');
+	            		}
+	        		},
+	        		failure: function(response) {
+	            		Ext.Msg.alert('Ошибка', 'Внутрення ошибка'); 
+	        		}
+	        	})
+			}
+		}
+	],
+	
 	listeners: {
 		beforeshow : function( form, eOpts ){
 				
 			Ext.Ajax.request({
-           		url: 'loadHash',
-        	    method: 'GET', 
+           		url: 'settings/loadHash',
             	success: function(response){
             		var data= Ext.JSON.decode(response.responseText);
             		Ext.getCmp("licence_key").setValue(data.licence_key);
     			    Ext.getCmp("date_valid").setValue(data.date_valid);
+    			    Ext.getCmp("url_monitoring").setValue(data.url_monitoring);
         		},
         		failure: function(response) {
             		Ext.Msg.alert('Ошибка', 'Внутрення ошибка'); 
@@ -97,7 +131,7 @@ var passwordPanel = Ext.create('Ext.panel.Panel', {
 			text: 'Сохранить',
 			handler: function(){
 				Ext.Ajax.request({
-	           		url: 'changePassword',
+	           		url: 'settings/changePassword',
 	        	    method: 'POST', 
 	            	params: {
 	            		'oldPassword' : Ext.getCmp('oldPassword').value, 
@@ -113,7 +147,7 @@ var passwordPanel = Ext.create('Ext.panel.Panel', {
 	            		Ext.getCmp('newPassword').setValue('');
 	            		Ext.getCmp('newRepeatPassword').setValue('');
 	            		
-	            		Ext.Msg.alert("Статус", message);
+	            		Ext.toast(message);
 	        		},
 	        		failure: function(response) {
 	            		Ext.Msg.alert('Ошибка', 'Внутрення ошибка'); 

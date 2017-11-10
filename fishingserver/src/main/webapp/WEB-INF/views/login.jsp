@@ -25,6 +25,7 @@ Ext.onReady(function(){
 		region:'center',
 		title: 'Войти',
 		frame: true,
+		icon:'resources/images/login.png',
 		layout: {
 	        type: 'vbox',   
 	        align: 'stretch',   
@@ -37,49 +38,59 @@ Ext.onReady(function(){
 		    items: [{
 		        xtype: 'textfield',
 		        id: 'username',
-		        name: 'username',
 		        fieldLabel: 'Пользователь',
 		        allowBlank: false
 		    }, {
 		        xtype: 'textfield',
 		        id: 'password',
-		        name: 'password',
 		        inputType: 'password',
 		        fieldLabel: 'Пароль',
-		        allowBlank: false
+		        allowBlank: false,
+		        
+		        listeners: {
+		        	specialkey: function(field, e){
+	            		if (e.getKey() == e.ENTER) {
+	            			submit();
+	            		}
+			        }	
+		        }
+		        
 		    }],
 		    buttons: [{
 		        text: 'Войти',
-		        formBind: true,
+		        id: 'submit',
 		        handler: function(){
-		        
-		        	var user = Ext.getCmp('username').value;
-		        	var pas = Ext.getCmp('password').value;	  
-		        	
-		        	Ext.Ajax.request({
-		           		url: 'j_spring_security_check',
-		        	    method: 'POST', 
-		            	params: {
-		                	'username'				 : user,
-		                	'password'				 : pas,
-		                	"${_csrf.parameterName}" : "${_csrf.token}"
-		            	},
-		            	success: function(response){
-		            		location.href = 'app'
-		        		},
-		        		failure: function(form, action) {
-		        			Ext.Msg.alert('Ошибка авторизации', 'Ошибка соединения с сервером');  
-		        		}
-		        		
-		        	})
-		        	
+		        	submit();
+			        	
 		        }		  
 		    }]
 		 }]
 	}); 
 	
+	function submit(){
+		var user = Ext.getCmp('username').value;
+    	var pas = Ext.getCmp('password').value;	  
+    	
+    	Ext.Ajax.request({
+       		url: 'j_spring_security_check',
+    	    method: 'POST', 
+        	params: {
+            	'username'				 : user,
+            	'password'				 : pas,
+            	"${_csrf.parameterName}" : "${_csrf.token}"
+        	},
+        	success: function(response){
+        		location.href = 'app'
+    		},
+    		failure: function(form, action) {
+    			Ext.Msg.alert('Ошибка авторизации', 'Ошибка соединения с сервером');  
+    		}
+    		
+    	})
+	}
+	
 	 var viewport = Ext.create('Ext.container.Viewport', {
-			style : 'background-image: url(resources/images/background.jpg)',
+			style : 'background-image: url(resources/images/background2.jpg)',
 	        layout : {
 	        	type: 'vbox',
 	            align: 'center',

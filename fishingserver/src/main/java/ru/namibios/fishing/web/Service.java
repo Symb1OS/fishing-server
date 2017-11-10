@@ -1,11 +1,13 @@
 package ru.namibios.fishing.web;
 
+import java.io.File;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import ru.namibios.fishing.model.encode.ShaEncoder;
+import ru.namibios.fishing.utils.Const;
 import ru.namibios.fishing.utils.Status;
 
 public class Service {
@@ -21,11 +23,11 @@ public class Service {
 	
 	private static final String SQL_UPDATE_PASSWORD = "update fishing.users SET password = ? where username = ?";
 
-	private static final String SQL_LOAD_HASH = "select licence_key, date_valid from fishing.users where username = ?";
+	private static final String SQL_SELECT_SETTINGS = "select licence_key, date_valid, url_monitoring from fishing.users where username = ?";
 
-	private static final String SQL_SELECT_HASH = "select licence_key from fishing.users where username = ?";
+	private static final String SQL_UPDATE_URL_MONITORING = "update fishing.users set url_monitoring = ? where username = ?";
 	
-	public int checkHash(String hash){
+	public int checkAuthorization(String hash){
 		int status = jdbc.queryForObject(SQL_SELECT_CHECK_AUTHORIZATION, Integer.class, hash); 
 		return status == 1 ? Status.AUTH_OK : Status.AUTH_BAD; 
 	}
@@ -46,11 +48,26 @@ public class Service {
 		return jdbc.update(SQL_UPDATE_PASSWORD, hash, username);
 	}
 
-	public Map<String, Object> loadHash(String username) {
-		return jdbc.queryForMap(SQL_LOAD_HASH, username);
+	public Map<String, Object> getSettings(String username) {
+		return jdbc.queryForMap(SQL_SELECT_SETTINGS, username);
 	}
 
-	public String getHash(String username) {
-		return jdbc.queryForObject(SQL_SELECT_HASH, String.class, username);
+	public String getSnapshotName(String hash) {
+		String path = "";
+		String name = "";
+		File files = new File(Const.UPLOAD_DIR);
+		for(File file : files.listFiles()){
+			if(file.isFile()) {
+				name = file.getName();
+				if(name.startsWith(hash)) 
+					path = file.getAbsolutePath();
+			}
+		}
+		return path;
+		
+	}
+
+	public void changeUrlMonitoring(String url, String name) {
+		jdbc.update(SQL_UPDATE_URL_MONITORING, url, name);
 	}
 }

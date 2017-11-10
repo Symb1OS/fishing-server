@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -15,26 +16,26 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import ru.namibios.fishing.model.User;
 import ru.namibios.fishing.utils.Const;
 import ru.namibios.fishing.utils.ImageUtils;
 import ru.namibios.fishing.utils.Status;
 
 @Controller
-public class MonitoringController {
+public class ApplicationController {
 	
-	private static final Logger logger = Logger.getLogger(MonitoringController.class);
+	private static final Logger logger = Logger.getLogger(ApplicationController.class);
 	
 	@Autowired
 	private Service service;
 	
-	@RequestMapping("app")
+	@RequestMapping("/app")
 	public ModelAndView app() {
 	
 		ModelAndView mav = new ModelAndView();
@@ -43,30 +44,34 @@ public class MonitoringController {
 		return mav;
 	}
 	
-	@RequestMapping("/status")
+	@RequestMapping("/monitoring")
 	public ModelAndView status(HttpServletRequest request, HttpServletResponse response) {
 		
-		String hash = service.getHash(SecurityContextHolder.getContext().getAuthentication().getName());
-				
-		String path = "";
-		String name = "";
-		File files = new File(Const.UPLOAD_DIR);
-		for(File file : files.listFiles()){
-			if(file.isFile()) {
-				name = file.getName();
-				if(name.startsWith(hash)) 
-					path = file.getAbsolutePath();
-			}
+		User user = new User();
+		
+		Map<String, Object> param = service.getSettings(user.getName());
+		String hash = (String) param.get("licence_key");
+		String url = (String) param.get("url_monitoring");
+		
+		ModelAndView mav = new ModelAndView();
+		
+		if(!url.startsWith("screen")) {
+			
+			mav.setViewName("monitoring");
+			mav.addObject("url", url);
+			return mav;
+		}else {
+			
+			String path = service.getSnapshotName(hash);
+			if(path.isEmpty()) return null;
+			
+			BufferedImage image = ImageUtils.read(new File(path));
+			byte[] bytes = ImageUtils.imageToBytes(image);
+			
+			mav.setViewName("screen");
+			mav.addObject("snapshot", "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes));
+			return mav;
 		}
-		
-		if(path.isEmpty()) return null;
-		
-		BufferedImage image = ImageUtils.read(new File(path));
-		byte[] bytes = ImageUtils.imageToBytes(image);
-		
-		ModelAndView mav = new ModelAndView("status");
-		mav.addObject("screen", "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes));
-		return mav;
 		
 	}
 	
@@ -76,7 +81,7 @@ public class MonitoringController {
 		
 		logger.info("Start upload file for [" + hash + "]");
 		
-	    int status = service.checkHash(hash);
+	    int status = service.checkAuthorization(hash);
 		if(status != Status.AUTH_OK) {
 			logger.info("[" + hash + "] - Authentification bad");
 			return;

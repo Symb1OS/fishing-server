@@ -54,7 +54,6 @@ public class UserController {
 		
 		List<Map<String, Object>> json = JSON.getList(JSON.getStringFromReader(request.getReader()));
 		
-		
 		ArrayList<Map<String, Object>> dataList = new ArrayList<>();
 		
 		json.stream().forEach(map -> {

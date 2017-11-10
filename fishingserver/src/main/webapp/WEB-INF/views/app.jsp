@@ -18,6 +18,9 @@
 
 var defaultUrl = 'status';
 
+var versionurl = 'version';
+var documentationurl = 'https://docs.google.com/document/d/1nHBPqPJMfjfIYPM7Lq5DOQcpgsyJqxCyknAwGIVdd_M/edit#';
+
 Ext.onReady(function showWindow() {
 	
 	var menu = Ext.create('Ext.panel.Panel', {
@@ -26,6 +29,7 @@ Ext.onReady(function showWindow() {
 		width : 210,
 		minSize : 300,
 		maxSize : 300,
+		icon: 'resources/images/menu.png',
 		collapsible : true,
 		split : false,
 		bodyStyle : {
@@ -39,6 +43,7 @@ Ext.onReady(function showWindow() {
 		defaults:{
 			xtype: 'button',
 			scale: 'large',
+			iconAlign: 'left',
 			width: 200,
 			height: 40,
 			style:{
@@ -48,18 +53,35 @@ Ext.onReady(function showWindow() {
 		items : [
 			{
 	  			text:'Мониторинг',
+				icon:'resources/images/monitoring.png',
 	  			handler: function(){
-	  				Ext.getCmp('main').getEl().dom.src = 'status';	
+	  				Ext.getCmp('main').getEl().dom.src = 'monitoring';	
 	  			}
 			},
 			{
 	  			text:'Настройки',
+				icon:'resources/images/settings.png',
 	  			handler: function(){
 	  				Ext.getCmp('main').getEl().dom.src = 'settings';
 	  			}
 			},
 			{
+	  			text:'Инструкция',
+	  			icon:'resources/images/instruction.png',
+	  			handler: function(){
+	  				Ext.getCmp('main').getEl().dom.src = documentationurl;
+	  			}
+			},
+			{
+	  			text:'Скачать',
+	  			icon:'resources/images/download.png',
+	  			handler: function(){
+	  				Ext.getCmp('main').getEl().dom.src = versionurl;
+	  			}
+			},
+			{
 	  			text:'Выйти',
+	  			icon:'resources/images/logout.png',
 	  			handler: function(){
 	  				logout();
 	  			}
@@ -104,7 +126,7 @@ Ext.onReady(function showWindow() {
         	autoEl: {
             	tag: 'iframe',
             	style: 'height: 100%; width: 100%; border: none',
-            	src: defaultUrl
+            	src: 'settings'
         	}
     	}]
 	});

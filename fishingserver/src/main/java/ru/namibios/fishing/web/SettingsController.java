@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import ru.namibios.fishing.model.User;
+
 @Controller
+@RequestMapping("/settings")
 public class SettingsController {
 	
 	private static final Logger logger = Logger.getLogger(SettingsController.class);
@@ -23,7 +26,7 @@ public class SettingsController {
 	@Autowired
 	private Service service;
 
-	@RequestMapping("/settings")
+	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView settings() {
 		
 		ModelAndView mav = new ModelAndView();
@@ -39,17 +42,31 @@ public class SettingsController {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		Map<String, Object> map = new HashMap<>();
 		
-		Map<String, Object> settings = service.loadHash(username);
+		Map<String, Object> settings = service.getSettings(username);
 		String hash = (String) settings.get("licence_key");
-		
 		
 		if ( hash == null || hash.isEmpty() ) {
 			map.put("licence_key", "Ключ отсутствует");
 			map.put("date_valid", "1970-01-01");
+			map.put("url_monitoring", "screen");
 			return map;
 		}
 				
 		return settings;
+	}
+	
+	@RequestMapping("/changeUrlMonitoring")
+	public @ResponseBody HashMap<String, Object> changeUrlMonitoring(HttpServletRequest request, HttpServletResponse response) {
+		
+		User user = new User();
+		
+		String url = request.getParameter("url_monitoring");
+		service.changeUrlMonitoring(url, user.getName());
+		
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("success", true);
+		
+		return map;
 	}
 	
 	@RequestMapping("/changePassword")

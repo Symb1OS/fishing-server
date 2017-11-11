@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +20,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import ru.namibios.fishing.model.Chars;
 import ru.namibios.fishing.model.ImageParser;
-import ru.namibios.fishing.utils.ImageUtils;
 import ru.namibios.fishing.utils.JSON;
 import ru.namibios.fishing.utils.Message;
 import ru.namibios.fishing.utils.ResponseHandler;
@@ -125,39 +122,6 @@ public class KapchaController {
 		
 		File file = new File(UPLOAD_DIR + hash + ".jpg");
 		ImageIO.write(image, "jpg", file);
-	}
-	
-	@RequestMapping(value="/status")
-	public ModelAndView status(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		String hash = request.getParameter("HASH");
-	
-	    int status = service.checkHash(hash);
-		if(status != Status.AUTH_OK) {
-			logger.info("[" + hash + "] - Authentification bad");
-			return null;
-		}
-				
-		String path = "";
-		String name = "";
-		File files = new File(UPLOAD_DIR);
-		for(File file : files.listFiles()){
-			if(file.isFile()) {
-				name = file.getName();
-				if(name.startsWith(hash)) 
-					path = file.getAbsolutePath();
-			}
-		}
-		
-		if(path.isEmpty()) return null;
-		
-		BufferedImage image = ImageUtils.read(new File(path));
-		byte[] bytes = ImageUtils.imageToBytes(image);
-		
-		ModelAndView mav = new ModelAndView("status");
-		mav.addObject("screen", "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes));
-		return mav;
-		
 	}
 	
 }

@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import ru.namibios.fishing.model.Chars;
@@ -39,23 +42,35 @@ public class KapchaController {
 	private Service service;
 	
 	@RequestMapping(value="/authorized")
-	public void auth(HttpServletRequest request, HttpServletResponse response) throws IOException{
+	public @ResponseBody Map<String, Object> auth(HttpServletRequest request, HttpServletResponse response){
 		
 		String hash = request.getParameter("HASH");
 		logger.info(hash);
-
-		if(hash.isEmpty()){
-			ResponseHandler.writeMapperJson(response, Status.KEY_IS_EMPTY);
-		}else{
-			int status = service.checkHash(hash);
-			if(status == Status.AUTH_OK){
-				logger.info(String.format(Message.MSG_AUTH_SUCCESS, hash));
-			}else{
-				logger.info(String.format(Message.MSG_AUTH_FAILURE, hash));
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		
+		if (hash.isEmpty()){
+			map.put("status", false);
+			map.put("message", "Ключ пустой");
+			return map;
+		} else{
+			Map<String, Object> status = service.checkValid(hash);
+			long exist = (long) status.get("exist");
+			long dateValid = (long) status.get("date_valid");
+			if (exist == 1) {
+				if (dateValid == 1) {
+					map.put("status", true);
+				}else {
+					map.put("status", false);
+					map.put("message", "Срок действия ключа истек");
+				}
+			} else {
+				map.put("status", false);
+				map.put("message", "Невалидный ключ");
 			}
-			
-			ResponseHandler.writeMapperJson(response, status);
+			return map;
 		}
+		
 	}
 	
 	@RequestMapping(value="/kapcha")
@@ -105,7 +120,7 @@ public class KapchaController {
 		
 	}
 	
-	@RequestMapping(value="upload")
+	@RequestMapping(value="/upload")
 	public void uploadImage(@RequestParam("HASH") String hash,
 							@RequestParam("SCREEN") MultipartFile multipartFile) throws JsonParseException, JsonMappingException, IOException {
 		

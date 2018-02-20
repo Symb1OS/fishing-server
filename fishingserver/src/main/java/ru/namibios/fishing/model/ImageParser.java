@@ -52,6 +52,7 @@ public class ImageParser {
 		int index = 0;
 		while(index < collectionTemplate.length){
 			List<int[][]> templateNumber = collectionTemplate[index].getTemplates(); 
+			logger.debug("Index " + index);
 			for (int[][] template : templateNumber) {
 				if(!isCorrectrDimension(numberMatrix, template)) continue;
 				coef.init(numberMatrix, template);

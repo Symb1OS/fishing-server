@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ru.namibios.fishing.model.Chars;
 import ru.namibios.fishing.model.ImageParser;
+import ru.namibios.fishing.utils.DateUtils;
 import ru.namibios.fishing.utils.JSON;
 import ru.namibios.fishing.utils.Message;
+import ru.namibios.fishing.utils.PythonExec;
 import ru.namibios.fishing.utils.ResponseHandler;
 import ru.namibios.fishing.utils.Status;
 
@@ -35,6 +38,7 @@ import ru.namibios.fishing.utils.Status;
 public class KapchaController {
 	
 	private static final String UPLOAD_DIR = "/home/symbios/fishingserver/resources/";
+	private static final String UPLOAD_KAPCHA_DIR = UPLOAD_DIR + "kapcha/";
 
 	private static final Logger logger = LoggerFactory.getLogger(KapchaController.class);
 
@@ -101,6 +105,32 @@ public class KapchaController {
 		
 		logger.info(String.format(Message.MSG_RESP_KEYS, hash, keys));
 		ResponseHandler.writeMapperJson(response, keys);
+	}
+	
+	@RequestMapping(value="/byte_kapcha")
+	public void byteKapcha(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("HASH") String hash,
+			@RequestParam("SCREEN") MultipartFile multipartFile) throws JsonGenerationException, JsonMappingException, IOException, InterruptedException{
+		
+		InputStream in = new ByteArrayInputStream(multipartFile.getBytes());
+		BufferedImage image = ImageIO.read(in);
+		
+		String folderday = DateUtils.yyyymmdd();
+		
+		File dir = new File(UPLOAD_KAPCHA_DIR + folderday);
+		if(!dir.exists()) {
+			dir.mkdir();
+		}
+		
+		String filename = UPLOAD_KAPCHA_DIR + folderday + "/" + String.valueOf(new Date().getTime() + ".jpg");
+		File file = new File(filename);
+		ImageIO.write(image, "jpg", file);
+		
+		String key = PythonExec.exec(filename);
+		key = key.replaceAll("0", "w").replaceAll("1", "s").replaceAll("2", "a").replaceAll("3", "d").replaceAll("4", "");
+		
+		logger.info(String.format(Message.MSG_RESP_KEYS, hash, key));
+		ResponseHandler.writeMapperJson(response, key);
 	}
 	
 	@RequestMapping(value="/test")

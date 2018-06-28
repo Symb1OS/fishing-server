@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class PythonExec {
 
-	private static final String SCRIPT_PATH = "/home/symbios/fishingserver/model/parsing.sh";
+	private static final String SCRIPT_PATH = "/usr/local/fishing-resources/model/parsing.sh";
 	
 	private PythonExec() {}
 	

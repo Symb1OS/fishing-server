@@ -8,7 +8,8 @@
 
 ### Requirements
 
-docker >= 18.03.0-ce
+- mysql 5.5;
+- docker >= 18.03.0-ce
 
 ### Building
 

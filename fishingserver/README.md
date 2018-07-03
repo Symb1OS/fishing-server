@@ -14,6 +14,8 @@
 ### Building
 
 ```
+mvn clean package
+
 docker image build -t fishingserver .
 
 ```
